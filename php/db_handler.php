@@ -4,7 +4,7 @@ require_once "pdo.php";
 
 
 
-function is_valid_user($pdo, $u, $p) {
+function isValidUser($pdo, $u, $p) {
 	$stmt = $pdo->prepare("SELECT * FROM users WHERE username=:username AND password=:password");
 	$stmt->bindParam(':username', $u);
 	$stmt->bindParam(':password', $p);
@@ -18,7 +18,7 @@ function is_valid_user($pdo, $u, $p) {
 	}
 }
 
-function register_user($pdo, $u, $p) {
+function registerUser($pdo, $u, $p) {
 	try {
 		$stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
 		$stmt->bindParam(':username', $u);
@@ -36,14 +36,14 @@ function register_user($pdo, $u, $p) {
 }
 
 function storeTasks($pdo, $jsondata, $user_id) {
-	$tasklist = json_decode($jsondata);
 	try {
-		$pdo->query("DELETE FROM tasks");
-
-		$query = "INSERT IGNORE INTO tasks (user_id, title, importance, completed) VALUES ";
+		$tasklist = json_decode($jsondata);
+		$query = "INSERT INTO tasks (user_id, title, importance, completed) VALUES ";
 		$qparam = array_fill(0, count($tasklist), "(?, ?, ?, ?)");
 		$query .= implode(",", $qparam);
+		$query .= " ON DUPLICATE KEY UPDATE importance=VALUES(importance), completed=VALUES(completed)";
 		$stmt = $pdo->prepare($query);
+
 		$i = 1;
 		foreach($tasklist as $task) {
 			$stmt->bindValue($i++, $user_id);
@@ -51,10 +51,11 @@ function storeTasks($pdo, $jsondata, $user_id) {
 			$stmt->bindValue($i++, $task->{'importance'});
 			$stmt->bindValue($i++, $task->{'completed'});
 		}
+
 		$stmt->execute();
 	}
 	catch (PDOException $e) {
-		echo $e.error_log(message);
+		print_r($e.error_log(message));
 	}
 }
 
@@ -81,23 +82,39 @@ function retrieveTasks($pdo, $user_id) {
 	}
 }
 
+function removeTask($pdo, $user_id, $title) {
+	try {
+		$stmt = $pdo->prepare("DELETE FROM tasks WHERE user_id = :user_id AND title = :title");
+		$stmt->bindParam(':user_id', $user_id);
+		$stmt->bindParam(':title', $title);
+		$stmt->execute();
+	}
+	catch(PDOException $e) {
+		print_r($e.error_log(message));
+	}
+}
+
 $postdata = file_get_contents("php://input");
 $request = json_decode($postdata, false);
 global $pdo;
 
 //store values in array and use call_user_array_func
 switch ($request->func) {
-	case "is_valid_user":
-		is_valid_user($pdo, $request->user, $request->pass);
+	case "isValidUser":
+		isValidUser($pdo, $request->user, $request->pass);
 		break;
-	case "register_user":
-		register_user($pdo, $request->user, $request->pass);
+	case "registerUser":
+		registerUser($pdo, $request->user, $request->pass);
 		break;
 	case "storeTasks":
 		storeTasks($pdo, $request->jsondata, $request->user_id);
 		break;
 	case "retrieveTasks":
 		retrieveTasks($pdo, $request->user_id);
+		break;
+	case "removeTask":
+		removeTask($pdo, $request->user_id, $request->title);
+		break;
 }
 
 ?>

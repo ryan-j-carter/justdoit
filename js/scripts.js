@@ -1,7 +1,3 @@
-function setContentHeight() {
-	var navHeight = document.getElementById("nav").offsetHeight;
-	document.getElementById("content").style.minHeight = window.innerHeight - navHeight + "px";
-}
 
 var todoApp = angular.module('todoApp', [])
 .service('sharedProps', function() {
@@ -28,25 +24,6 @@ var todoApp = angular.module('todoApp', [])
 		});
 	}
 	this.tasklist = _tasklist;
-})
-.factory('beforeUnload', function ($rootScope, $window) {
-    // Events are broadcast outside the Scope Lifecycle
-    
-    $window.onbeforeunload = function (e) {
-        var confirmation = {};
-        var event = $rootScope.$broadcast('onBeforeUnload', confirmation);
-        if (event.defaultPrevented) {
-            return confirmation.message;
-        }
-    };
-    
-    $window.onunload = function () {
-        $rootScope.$broadcast('onUnload');
-    };
-    return {};
-})
-.run(function (beforeUnload) {
-    // Must invoke the service at least once
 });
 
 todoApp.controller('todoCtrl', function($scope, $http, sharedProps) {
@@ -83,7 +60,7 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 				data: {
 					user:$scope.username, 
 					pass:$scope.password,
-					func:"is_valid_user"
+					func:"isValidUser"
 				}
 			}).success(function(data) {
 				if (data != '') {
@@ -95,9 +72,7 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 
 					$scope.name = $scope.username;
 					$scope.logged_in = true;
-					$scope.username = null;
-					setContentHeight();
-				}
+					$scope.username = null;				}
 				else {
 					alert("Invalid username or password");
 				}
@@ -114,7 +89,7 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 				data: {
 					user:$scope.username,
 					pass:$scope.password,
-					func:"register_user"
+					func:"registerUser"
 				}
 			}).success(function(data) {
 				if (data != '') {
@@ -158,9 +133,18 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 todoApp.controller('taskCtrl', function($scope, $http, sharedProps) {
 	$scope.tasklist = sharedProps.tasklist;
 
-	$scope.remove = function(task) {
+	$scope.removeTask = function(task) {
 		var index = $scope.tasklist.indexOf(task);
 		$scope.tasklist.splice(index, 1);
+		$http({
+			url: '../php/db_handler.php',
+			method: 'POST',
+			data: {
+				user_id: localStorage.getItem("user_id"),
+				title: task.title,
+				func: 'removeTask'
+			}
+		});
 	}
 
 	function fieldsFilled() {
@@ -175,6 +159,11 @@ todoApp.controller('taskCtrl', function($scope, $http, sharedProps) {
 
 	$scope.addTask = function() {
 		if (fieldsFilled()) {
+
+			//ignore request if the task is in the list
+			if ($scope.tasklist.some(function(task) {return task.title == $scope.title;})) {
+				return;
+			}
 			var t = {
 				title: $scope.title,
 				importance: $scope.importance,
@@ -188,19 +177,18 @@ todoApp.controller('taskCtrl', function($scope, $http, sharedProps) {
 		}
 	}
 
-	//store tasks when leaving page
-	$scope.$on('onBeforeUnload', function (e, confirmation) {
-		var uid = localStorage.getItem("user_id");
-		if (uid != null) {
-	        $http({
-				url: '../php/db_handler.php',
-				method: 'POST',
-				data:{
-					jsondata: JSON.stringify($scope.tasklist),
-					user_id: uid,
-					func: 'storeTasks'
-				}
-			});
-		}
-    });
+	$scope.saveTasks = function() {
+		console.log($scope.tasklist);
+		$http({
+			url: '../php/db_handler.php',
+			method: 'POST',
+			data: {
+				jsondata: JSON.stringify($scope.tasklist),
+				user_id: localStorage.getItem("user_id"),
+				func: 'storeTasks'
+			}
+		}).success(function(data) {
+			console.log(data);
+		});
+	}
 });

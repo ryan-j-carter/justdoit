@@ -34,8 +34,12 @@ input {
 	width:100%;
 	min-height:180px;
 	text-align:center;
+
+	
+	display:-webkit-flex;
 	display:flex;
-	justify-content:space-between;
+
+	justify-content:space-around;
 	align-items:center;
 	flex-direction:column;
 	padding:1em 0;
@@ -50,9 +54,12 @@ input {
 }
 
 #content {
+	
+	display:-webkit-flex;
 	display:flex;
+
 	align-items:center;
-	justify-content:center;
+	justify-content:flex-start;
 	flex-direction:column;
 	padding:2em 0;
 }
@@ -66,7 +73,7 @@ input {
 	margin-bottom:2em;
 	text-align:center;
 }
-#new-task h3, #new-task > input {display:block; margin-bottom:0.5em;}
+#new-task h3, #new-task > input {display:block; margin-bottom:1em;}
 #add-task:hover {cursor:pointer;text-decoration:underline;}
 #add-task-btn {
 	width:20px;
@@ -154,14 +161,23 @@ h3 {font-size:1.1em;}
 @media (min-width:650px) {
 	h1 {font-size:2.5em;}
 	h2 {font-size:1.4em;}
-	#nav {text-align:left;padding:1em 1.25em; flex-direction:row;}
+	#nav {
+		text-align:left;
+		padding:1em 1.25em; 
+		flex-direction:row;
+		justify-content:space-between;
+	}
 }
 
 /* Small devices (tablets, 768px and up) */
 @media (min-width: 768px) {
 	h1 {font-size:3em;}
 	#nav {padding:1em 2em;}
-	#content {flex-direction:row; align-items:flex-start}
+	#content {
+		flex-direction:row; 
+		align-items:flex-start; 
+		justify-content:center;
+	}
 	#new-task {margin-right:30px;text-align:left;}
 	#tasks {width:60%;}
 	
