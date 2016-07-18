@@ -9,23 +9,28 @@
 		<link type="text/css" rel="stylesheet" href="css/styles.css"/>
 
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 		<script type="text/javascript" src="js/scripts.js"></script>
 	</head>
 	<body class="bg-light-grey">
 		<div id="nav" class="bg-dark tx-white" ng-controller="userCtrl">
-			<h1>Just Do It&nbsp;<span>＼(^▽^)ノ</span></h1>
+			<h1>Just Do It <span>＼(^▽^)ノ</span></h1>
 			<div id="login" ng-show="!logged_in">
 				<h2 class="tx-green">Login or Register</h2>
-				<div class="input">
+				<div id="username">
 					<div>Username:</div>
 					<input type="text" ng-model="username"/>
 				</div>
-				<div class="input">
+				<div id="password">
 					<div>Password:</div>
 					<input type="password" ng-model="password"/>
 				</div>
 				<div class="button bg-green tx-dark" ng-click="login()">Login</div>
-				<div class="button bg-green tx-dark" ng-click="register()">Register</div>
+				<div class="button bg-white tx-dark" ng-click="register()">Register</div>
+				<div id="bad-login" class="bg-white tx-err hidden">
+					<div ng-show="!reg">Invalid login</div>
+					<div ng-show="reg">Username taken</div>
+				</div>
 			</div>
 			<div id="logout" ng-show="logged_in">
 				<h2>Welcome <span ng-show="!newreg">back</span>, <span class="tx-green">{{name}}</span></h2>
@@ -36,18 +41,18 @@
 			<div id="new-task">
 				<h3>Something to do?</h3>
 				<input type="text" ng-model="title"/>
-				<span class="imp-selector">
-					<span class="importance bg-red"></span>
+				<label class="check ot-red">
 					<input type="radio" value="3" ng-model="importance"/>
-				</span>
-				<span class="imp-selector">
-					<span class="importance bg-orange"></span>
+					<div class="check-ind bg-red"></div>
+				</label>
+				<label class="check ot-orange">
 					<input type="radio" value="2" ng-model="importance"/>
-				</span>
-				<span class="imp-selector">
-					<span class="importance bg-yellow"></span>
+					<div class="check-ind bg-orange"></div>
+				</label>
+				<label class="check ot-yellow">
 					<input type="radio" value="1" ng-model="importance"/>
-				</span>
+					<div class="check-ind bg-yellow"></div>
+				</label>
 				<h3 id="add-task" ng-click="addTask()"><div id="add-task-btn"></div>Add It</h3>
 				<div class="button bg-green" ng-click="saveTasks()">Save Tasks</div>
 			</div>
@@ -56,18 +61,18 @@
 				<div class="task tx-dark" ng-repeat="task in tasklist | orderBy:['completed','-importance']">
 					<h2 class="tx-dark">{{task.title}}</h2>
 					<span>
-						<span class="imp-selector">
-							<span class="importance bg-red"></span>
+						<label class="check ot-red">
 							<input type="radio" value="3" ng-model="task.importance"/>
-						</span>
-						<span class="imp-selector">
-							<span class="importance bg-orange"></span>
+							<div class="check-ind bg-red"></div>
+						</label>
+						<label class="check ot-orange">
 							<input type="radio" value="2" ng-model="task.importance"/>
-						</span>
-						<span class="imp-selector">
-							<span class="importance bg-yellow"></span>
+							<div class="check-ind bg-orange"></div>
+						</label>
+						<label class="check ot-yellow">
 							<input type="radio" value="1" ng-model="task.importance"/>
-						</span>
+							<div class="check-ind bg-yellow"></div>
+						</label>
 					</span>
 					<span><input type="checkbox" ng-model="task.completed"/>Completed</span>
 					<div class="button bg-white" ng-click="removeTask(task)">Delete</div>

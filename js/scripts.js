@@ -43,13 +43,16 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 	$scope.tasklist = sharedProps.tasklist;
 
 	function fieldsFilled() {
-		if ($scope.username == null || $scope.password == null) {
-			alert("Please enter a username and password");
-			return false;
+		var filled = true;
+		if ($scope.username == null) {
+			$('#username input').addClass("err-empty-input");
+			filled = false;
 		}
-		else {
-			return true;
+		if ($scope.password == null) {
+			$('#password input').addClass("err-empty-input");
+			filled = false;
 		}
+		return filled;
 	}
 
 	$scope.login = function() {
@@ -72,9 +75,11 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 
 					$scope.name = $scope.username;
 					$scope.logged_in = true;
-					$scope.username = null;				}
+					$scope.username = null;
+				}
 				else {
-					alert("Invalid username or password");
+					$('#bad-login').removeClass("hidden");
+					$scope.reg = false;
 				}
 				$scope.password = null;
 			});
@@ -102,7 +107,8 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 					$scope.username = null;
 				}
 				else {
-					alert("Username taken.");
+					$('#bad-login').removeClass("hidden");
+					$scope.reg = true;
 				}
 				$scope.password = null;
 			});
@@ -191,4 +197,11 @@ todoApp.controller('taskCtrl', function($scope, $http, sharedProps) {
 			console.log(data);
 		});
 	}
+});
+
+$(document).ready(function() {
+	$('#username input, #password input').on("focus", function() {
+		$(this).removeClass("err-empty-input");
+		$('#bad-login').addClass("hidden");
+	});
 });
