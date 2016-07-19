@@ -5,11 +5,11 @@ var todoApp = angular.module('todoApp', [])
 
 	this.retrieveTasks = function(user_id, $http) {
 		$http({
-			url:'../php/db_handler.php',
+			url:'../php/request_handler.php',
 			method:'POST',
 			data: {
-				user_id:user_id,
-				func:'retrieveTasks'
+				func:'retrieveTasks',
+				params: [user_id]
 			}
 		}).success(function(data) {
 			data.forEach(function(item) {
@@ -58,12 +58,11 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 	$scope.login = function() {
 		if (fieldsFilled()) {
 			$http({
-				url: '../php/db_handler.php',
+				url: '../php/request_handler.php',
 				method: 'POST',
 				data: {
-					user:$scope.username, 
-					pass:$scope.password,
-					func:"isValidUser"
+					func:'isValidUser',
+					params: [$scope.username, $scope.password]
 				}
 			}).success(function(data) {
 				if (data != '') {
@@ -89,12 +88,11 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 	$scope.register = function() {
 		if (fieldsFilled()) {
 			$http({
-				url: '../php/db_handler.php',
+				url: '../php/request_handler.php',
 				method: 'POST',
 				data: {
-					user:$scope.username,
-					pass:$scope.password,
-					func:"registerUser"
+					func:'registerUser',
+					params: [$scope.username, $scope.password]
 				}
 			}).success(function(data) {
 				if (data != '') {
@@ -116,15 +114,14 @@ todoApp.controller('userCtrl', function($scope, $http, sharedProps) {
 	}
 
 	$scope.logout = function() {
-		var uid = localStorage.getItem("user_id");
-		if (uid != null) {
+		var user_id = localStorage.getItem("user_id");
+		if (user_id != null) {
 	        $http({
-				url: '../php/db_handler.php',
+				url: '../php/request_handler.php',
 				method: 'POST',
 				data:{
-					jsondata: JSON.stringify($scope.tasklist),
-					user_id: uid,
-					func: 'storeTasks'
+					func: 'storeTasks',
+					params: [JSON.stringify($scope.tasklist), user_id]
 				}
 			});
 		}
@@ -143,12 +140,11 @@ todoApp.controller('taskCtrl', function($scope, $http, sharedProps) {
 		var index = $scope.tasklist.indexOf(task);
 		$scope.tasklist.splice(index, 1);
 		$http({
-			url: '../php/db_handler.php',
+			url: '../php/request_handler.php',
 			method: 'POST',
 			data: {
-				user_id: localStorage.getItem("user_id"),
-				title: task.title,
-				func: 'removeTask'
+				func: 'removeTask',
+				params: [localStorage.getItem("user_id"), task.title]
 			}
 		});
 	}
@@ -186,15 +182,14 @@ todoApp.controller('taskCtrl', function($scope, $http, sharedProps) {
 	$scope.saveTasks = function() {
 		console.log($scope.tasklist);
 		$http({
-			url: '../php/db_handler.php',
+			url: '../php/request_handler.php',
 			method: 'POST',
 			data: {
-				jsondata: JSON.stringify($scope.tasklist),
-				user_id: localStorage.getItem("user_id"),
-				func: 'storeTasks'
+				func: 'storeTasks',
+				params: [JSON.stringify($scope.tasklist), localStorage.getItem("user_id")]
 			}
 		}).success(function(data) {
-			console.log(data);
+			$('#success').trigger('save-success');
 		});
 	}
 });
@@ -203,5 +198,11 @@ $(document).ready(function() {
 	$('#username input, #password input').on("focus", function() {
 		$(this).removeClass("err-empty-input");
 		$('#bad-login').addClass("hidden");
+	});
+
+	$('#success').on('save-success', function() {
+		var that = $(this);
+		that.removeClass("invisible");
+		setTimeout(function() {that.addClass("invisible");}, 2000);
 	});
 });

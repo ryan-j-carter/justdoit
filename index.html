@@ -54,7 +54,6 @@
 					<div class="check-ind bg-yellow"></div>
 				</label>
 				<h3 id="add-task" ng-click="addTask()"><div id="add-task-btn"></div>Add It</h3>
-				<div class="button bg-green" ng-click="saveTasks()">Save Tasks</div>
 			</div>
 			<div id="tasks" class="bg-white">
 				<h2 ng-show="!tasklist.length">Add some tasks...</h2>
@@ -77,6 +76,8 @@
 					<span><input type="checkbox" ng-model="task.completed"/>Completed</span>
 					<div class="button bg-white" ng-click="removeTask(task)">Delete</div>
 				</div>
+				<div id="save-tasks" class="button bg-green" ng-show="logged_in && tasklist.length" ng-click="saveTasks()">Save Tasks</div>
+				<div id="success" class="invisible tx-green">&#10004; tasks saved</div>
 			</div>
 		</div>
 	</body>

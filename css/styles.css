@@ -68,11 +68,13 @@ input {
 	align-items:center;
 	justify-content:flex-start;
 	flex-direction:column;
+	flex-wrap:wrap;
 	padding:2em 0;
 }
 
 #tasks {
 	width:90%;
+	position:relative;
 	box-shadow:0 0 10px 0px #888;
 }
 #tasks > h2 {text-align:center; margin:1em 0;}
@@ -81,6 +83,8 @@ input {
 	text-align:center;
 }
 #new-task h3, #new-task > input {display:block; margin-bottom:1em;}
+
+#add-task {margin-top:10px;}
 #add-task:hover {cursor:pointer;text-decoration:underline;}
 #add-task-btn {
 	width:20px;
@@ -89,6 +93,22 @@ input {
 	background-size:10px 10px;
 	display:inline-block;
 	vertical-align:text-top;
+}
+
+#save-tasks {
+	position:absolute;
+	text-align:center;
+	left:50%;
+	transform: translateX(-50%);
+	margin-top:1em;
+	padding:5px 10px;
+}
+#success {
+	position:absolute;
+	left:50%;
+	transform: translateX(-50%);
+	margin-top:3em;
+	transition:visibility 0.75s ease-out, opacity 0.75s ease-out;
 }
 
 /*---CLASSES---*/
@@ -113,6 +133,7 @@ input {
 	height:15px;
 	cursor:pointer;
 	border-radius:50%;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
 }
 
 .check input {
@@ -152,9 +173,10 @@ input {
 	margin-bottom:0.4em;
 }
 
+
 /*---GENERIC CLASSES---*/
 .hidden {display:none;}
-.invisible {visibility: hidden;}
+.invisible {visibility: hidden; opacity:0;}
 .err-empty-input{box-shadow:0 0 0 1px #FF0000;}
 
 /*---FONT SIZES---*/
