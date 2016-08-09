@@ -1,7 +1,7 @@
 # Just Do It
-Simple To-Do list application using AngularJS in the frontend and PHP in the backend.
+http://ryancarterj.com/justdoit
 
-Viewable at http://ryancarterj.com/justdoit
+Simple To-Do list application using AngularJS in the frontend and PHP in the backend.
 
 Features:
 * Create/Log in to user profile with unique usernames
